@@ -12,9 +12,12 @@ struct ContentView: View {
     @ObservedObject var sensor = MotionSensor.shared_m
     @ObservedObject var soundplayer = SoundPlayer()
     @ObservedObject var fishdata = FishData.shared
+    @ObservedObject var coordinatedata = CoordinateData.coor_shared
     @State var timer :Timer?
     @State var circletoggle = true
     @State var isVibrationOn = false
+    @State var errorstop = 0
+    
     var body: some View {
       
         ZStack {
@@ -40,37 +43,50 @@ struct ContentView: View {
                 .onReceive(NotificationCenter.default.publisher(for: .deviceDidShakeNotification)) { _ in
 
                     if sensor.shakecount == 0 {
+                        
                         print("SSSSSS" + "\(sensor.shakecount)")
-                        sensor.start_fishing() // 振った瞬間から後にかけての音の処理呼び出し
+                        sensor.start_fishing() // 振った瞬間から後にかけての音の処理を呼び出しする。が、仮置き
 
-                        // if文で同じ方法かをここで処理を実装する
+                        // if文で同じ方法かをここで処理WO立てる
                         // もしtureならばstart_fishing()呼び出す
                         // さらにランダムで何秒後にバイブレーションがなるかを実装する
                         // さらにバイブレーションを止めてあげる
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                             withAnimation {
+                              
                                 self.soundplayer.aftershakingPlay() //
                                 print("SSSSSS" + "\(self.sensor.h)")
                                 print("SSSSSS" + "\(self.sensor.hh)")
                                 print("SSSSSS" + "\(self.sensor.coordinatedata.rh)")
                         //sleep(2)
                                 if (self.sensor.hh == self.sensor.coordinatedata.rh) { // 竿を投げた方向と魚のいる方向が一致していれば釣れる
-                                    self.sensor.shakecount += 1
-                                    print("SSSSSS" + "\(self.sensor.coordinatedata.rh)")
-                                    print("SSSSSS竿を投げる方向があっています。")
-                                    self.play_fishing() // プレイ中の処理呼び出し
-                                    print("SSSSSSプレイ開始。")
-
+                                    
+                                
+                                        self.sensor.shakecount += 1
+                                        print("SSSSSS" + "\(self.sensor.coordinatedata.rh)")
+                                        print("SSSSSS竿を投げる方向があっています。")
+                                        self.play_fishing() // プレイ中の処理呼び出し
+                                        print("SSSSSSプレイ開始。")
+                                  
                         } else {
                             print("竿を投げる方向が違います。")
                         }
                             } // 遅延
                         } // 遅延
+                        
                     } else if sensor.shakecount == 1 {
-                        // 釣れたらの処理の実装（関数呼び出し）
-                        isVibrationOn = false
-                        //sensor.timecount()
-                        sensor.finish_fishing() // 釣り上げ処理呼び出し
+                        
+                        if errorstop == 1 {
+                            errorstop = 0
+                            // 釣れたらの処理の実装（関数呼び出し）
+                            isVibrationOn = false
+                            //sensor.timecount()
+                            sensor.finish_fishing() // 釣り上げ処理呼び出し
+                            
+                           
+                        } else {
+                            print("まだスマホを振っても釣れません")
+                        }
 
                     } else {
                         // 理想はここで魚に逃げられましたの処理を実装したい
@@ -84,25 +100,25 @@ struct ContentView: View {
                         }
 
                    
-                    Button(action: {
-                       // timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                            self.sensor.isStarted ? self.sensor.stop() : self.sensor.start()
-                                //  }
-                       // self.sensor.viewDidLoad()// 値を見るための記述しているが
-                        // 他のところで呼び出しているので後で消す
-                        
-                        if isVibrationOn == false {
-                            isVibrationOn = true
-                            makeVibrationNoLimit()
-                        } else {
-                            isVibrationOn = false
-                        }
-                       
-                       
-                    }) {
-                        self.sensor.isStarted ? Text("STOP") : Text("START")
-                    }
-            
+//                    Button(action: {
+//                       // timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+//                            self.sensor.isStarted ? self.sensor.stop() : self.sensor.start()
+//                                //  }
+//                       // self.sensor.viewDidLoad()// 値を見るための記述しているが
+//                        // 他のところで呼び出しているので後で消す
+//
+//                        if isVibrationOn == false {
+//                            isVibrationOn = true
+//                            makeVibrationNoLimit()
+//                        } else {
+//                            isVibrationOn = false
+//                        }
+//
+//
+//                    }) {
+//                        self.sensor.isStarted ? Text("STOP") : Text("START")
+//                    }
+//
             
            // Spacer()
             ScrollView(.horizontal) {
@@ -128,6 +144,7 @@ struct ContentView: View {
                     
                     Button(action: {
                   
+                        sensor.historyshowingSheet = true
                        
                         
                 }) {
@@ -137,9 +154,23 @@ struct ContentView: View {
                         .foregroundColor(Color.orange)
                         .frame(width: 110, height: 110)
                 }
+                .sheet(isPresented: $sensor.historyshowingSheet) {
+                    HistoryView()
+                        }
                     
                     Button(action: {
                   
+//                        sensor.endshowingSheet = true
+                        sensor.shakecount = 0
+                        sensor.resultcount = 0
+                        
+                        fishdata.startfish()
+                        sensor.fishookisa = fishdata.startfishdata
+                       // print("UUUU" + String(fishookisa)) // 確認用
+                        coordinatedata.startcoordinate() // 座標の関数呼び出し
+                        print("SSSSSS：" + "\(sensor.coordinatedata.rh)")
+                        sensor.fishxVal = sensor.coordinatedata.returncoordinate
+                        sensor.fishyVal = sensor.coordinatedata.returncoordinatesecond
                        
                         
                 }) {
@@ -149,6 +180,9 @@ struct ContentView: View {
                         .foregroundColor(Color.orange)
                         .frame(width: 110, height: 110)
                 }
+//                .sheet(isPresented: $sensor.endshowingSheet) {
+//                    EndView()
+//                        }
                     
                 }// HStack
             } // ScrollView
@@ -167,13 +201,17 @@ struct ContentView: View {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + vtime) {
             withAnimation {
-                print("SSSSSSバイブレーション呼び出し開始")
-                self.isVibrationOn = true
-                self.makeVibrationNoLimit()
-                //self.sensor.count = 0
-                self.sensor.timecount()
-                self.Failure_fishing()
-                print("SSSSSSバイブレーション呼び出し成功")
+                
+                errorstop = 1
+                
+                    print("SSSSSSバイブレーション呼び出し開始")
+                    self.isVibrationOn = true
+                    self.makeVibrationNoLimit()
+                    //self.sensor.count = 0
+                    //self.sensor.timecount()　＊＊＊＊＊＊＊＊＊＊
+                    self.Failure_fishing()
+                    print("SSSSSSバイブレーション呼び出し成功")
+               
                 
             }
         }

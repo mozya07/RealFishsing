@@ -36,8 +36,8 @@ struct SheetView: View {
                 Spacer()
               
                 
-            Text("\(sensor.count)")
-                Text("\(sensor.resultcount)")
+//            Text("\(sensor.count)") // 秒ずう確認よう
+//                Text("\(sensor.resultcount)") // 秒数確認よう
                 }
                    
                 Text("\(fishdata.fish[fishdata.randomfish][3])")
@@ -83,7 +83,7 @@ struct SheetView: View {
                 
                 Spacer()
                 
-            }
+            }//
         }
         } else if sensor.resultcount == 1 {
             

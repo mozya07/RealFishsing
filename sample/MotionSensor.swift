@@ -35,13 +35,15 @@ class MotionSensor: UIViewController ,CLLocationManagerDelegate, ObservableObjec
     // シェイク変数
     @Published var shakecount = 0
     @Published var resultcount = 0
-    @State var timer :Timer?
+    var timer :Timer?
     @Published var count : Double = 0
 
     
     // シート変数
     @Published var showingSheet : Bool = false
     @Published var ruleshowingSheet : Bool = false
+    @Published var historyshowingSheet : Bool = false
+    @Published var endshowingSheet : Bool = false
     
     // バイブレーション変数
     @State var isVibrationOn = false
@@ -184,17 +186,22 @@ class MotionSensor: UIViewController ,CLLocationManagerDelegate, ObservableObjec
     //}
     
     func finish_fishing() {
+        
+        var fishHistory = userDefaults.array(forKey:"fishHistory" ) as? [Int] ?? []
+        fishHistory.append(fishdata.randomfish)
+        userDefaults.set(fishHistory, forKey: "fishHistory")
         // 釣り上げの処理を実装する
         //let fishtime = Double(fishdata.fish[fishdata.randomfish][1]) ?? 0.0
 //        var fishtime : Double = 0.0
 //        fishtime = Double(fishdata.fish[fishdata.randomfish][1]) ?? 0.0
-        let fishtime = Double(fishdata.fish[fishdata.randomfish][1]) ?? 0.0
-        print("COUNT1" + "\(self.count)")
-        
-        if self.count > fishtime {
-            resultcount += 1
-            print("COUNT2" + "\(self.count)")
-       }
+//        let fishtime = Double(fishdata.fish[fishdata.randomfish][1]) ?? 0.0 ******
+//        print("COUNT1" + "\(self.count)")
+//
+//        if self.count > fishtime {
+//            resultcount += 1
+//            print("COUNT2" + "\(self.count)")
+//
+//       } *********
         
      //   if count <= fishtime { // 秒数以内に竿を上げた処理（釣り上げ成功処理）
             // ここでシートを表示する処理を実装
@@ -202,37 +209,32 @@ class MotionSensor: UIViewController ,CLLocationManagerDelegate, ObservableObjec
       //  }
     
         // バイブレーションの音がしてから何秒いないに竿をあげないと魚が釣れないという処理
-        
+        //count = 0 ***:
     }
     
-    func timecount() { // 何秒以内を表す処理
-        
-        var countn = 0
-        
-        if countn == 0 {
-            
-            print("COUNT3" + "\(count)")
-            
-            //init(timeInterval: TimeInterval, invocation: NSInvocation, repeats: Bool)
-            timer?.invalidate()
-            timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in // falseにすれば止まるかも
-                self.count += 0.1
-                print("COUNT4" + "\(self.count)")
-                            }
-        } else {
-            self.count = 0
-        }
-        count += 1
-        // 毎秒＋１する処理
-      
-        
-       
-        
-        
-       
-        
-       
-    }
+//    func timecount() { // 何秒以内を表す処理 ***********
+//
+//        //var countn = 0
+//
+//       // if countn == 0 {
+//
+//            print("COUNT3" + "\(count)")
+//
+//            //init(timeInterval: TimeInterval, invocation: NSInvocation, repeats: Bool)
+//
+//            if let timer = timer {
+//                timer.invalidate()
+//            }
+//            timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+//                self.count += 0.1
+//                print("COUNT4" + "\(self.count)")
+//                            }
+//      //  } else {
+//         //   self.count = 0
+//     //   }
+//       // count += 1
+//        // 毎秒＋１する処理
+//    }
     
         
         func reelPlay() {

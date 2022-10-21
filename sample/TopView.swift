@@ -11,6 +11,7 @@ struct TopView: View {
     
     @ObservedObject var soundplayer = SoundPlayer()
     @State private var topviewFinished = true
+    @State private var btntoggle = false
     
     var body: some View {
         
@@ -22,6 +23,8 @@ struct TopView: View {
             
             ZStack {
                 Button(action: {
+                    
+                    btntoggle = true
                     
                     soundplayer.departurePlay()
                     
@@ -40,6 +43,7 @@ struct TopView: View {
                         .offset(y : 20)
                         .blinkEffect()
                 }
+                .disabled(btntoggle)
             }
             .offset(y: 200)
         }

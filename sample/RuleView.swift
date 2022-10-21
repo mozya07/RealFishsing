@@ -19,6 +19,7 @@ struct RuleView: View {
         VStack {
             
             ScrollView {
+
                 
                 Image("rule1")
                     .resizable()

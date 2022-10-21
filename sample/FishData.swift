@@ -88,5 +88,10 @@ class FishData : ObservableObject {
         randomfish = Int.random(in: 0...30)
         startfishdata = Double(fish[randomfish][0]) ?? 0.0
         //startfishdata = dfish[randomfish][0]
+        //釣った魚の履歴
+//        var fishHistory = userDefaults.array(forKey:"fishHistory" ) as? [Int] ?? []
+//        fishHistory.append(randomfish)
+//        userDefaults.set(fishHistory, forKey: "fishHistory")
+//
     }
 }

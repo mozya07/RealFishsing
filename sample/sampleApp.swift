@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+var userDefaults = UserDefaults.standard
+
 @main
 struct sampleApp: App {
     var body: some Scene {
